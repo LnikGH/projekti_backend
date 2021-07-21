@@ -15,6 +15,8 @@ provider "google" {
   zone = var.zone
 }
 
+# enables apis
+
 resource "google_project_service" "gcp_services" {
   count   = length(var.apis)
   project = var.project
@@ -22,10 +24,13 @@ resource "google_project_service" "gcp_services" {
   disable_on_destroy = false
 }
 
+# enabled ips
 
 locals {
 onprem = ["0.0.0.0/0"]
 }
+
+# makes cloud sql instance
 
 resource "google_sql_database_instance" "master" {
   name = var.master_instance_name
@@ -53,14 +58,21 @@ resource "google_sql_database_instance" "master" {
     }
   }
 }
+
+# makes cloud sql database
+
 resource "google_sql_database" "database" {
   name     = var.db_name
   instance = google_sql_database_instance.master.name
 }
 
+# needed to randomize password
+
 resource "random_id" "user-password" {
   byte_length = 8
 }
+
+# makes sql user
 
 resource "google_sql_user" "default" {
   name     = var.user_name

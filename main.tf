@@ -14,18 +14,26 @@ provider "google" {
   region = var.region
   zone = var.zone
 }
+
+# references child, which was needed to get outputs for the sql - vm connection
+
 module "child"{
   source = ".//child"
   project = var.project
   user_name = var.user_name
   credentials_file = var.credentials_file
 }
+
+# enables apis
+
 resource "google_project_service" "gcp_services" {
   count   = length(var.apis)
   project = var.project
   service = var.apis[count.index]
   disable_on_destroy = false
 }
+
+#firewall rule for the email plugin
 
 resource "google_compute_firewall" "default" {
   name    = "email"
@@ -37,6 +45,8 @@ resource "google_compute_firewall" "default" {
   }
   source_tags = ["email"]
 }
+
+# creates vm with metadata from the child outputs
 
 resource "google_compute_instance" "vm" {
     name = var.vm_instance_name
@@ -65,6 +75,8 @@ resource "google_compute_instance" "vm" {
       }
 
   }
+
+# next three just make local txt files which you can reference when connecting to sql locally
 
 resource "local_file" "pw" {
     content = module.child.generated_user_password
