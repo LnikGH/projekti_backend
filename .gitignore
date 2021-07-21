@@ -1,0 +1,13 @@
+# Compiled files
+*.tfstate
+*.tfstate.backup
+**/.terraform/*
+**/.vscode/*
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+foo1.txt
+foo2.txt
+foo3.txt
